@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 
 // Mock data for the website
 const mockHomes = [
@@ -9,16 +10,130 @@ const mockHomes = [
     baths: 2.5,
     sqft: 2419,
     address: '4116 52nd Street NE, Tacoma, WA 98422',
-    image: 'https://images.unsplash.com/photo-1616003618788-413cd29e3f1a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwyfHxjb250ZW1wb3JhcnklMjBob21lJTIwZXh0ZXJpb3J8ZW58MHx8fGJsdWV8MTc1MTg3NjYxOXww&ixlib=rb-4.1.0&q=85'
+    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
+    status: 'NEW',
+    type: 'Single Family'
   },
   {
     id: 2,
-    price: '$24,985,000',
-    beds: 5,
-    baths: 5.5,
-    sqft: 8980,
+    price: '$1,080,000',
+    beds: 3,
+    baths: 3,
+    sqft: 3200,
     address: '415 Shoreland Drive SE, Bellevue, WA 98004',
-    image: 'https://images.pexels.com/photos/8728559/pexels-photo-8728559.jpeg'
+    image: 'https://images.unsplash.com/photo-1621693722835-44c9dcb724fd',
+    status: 'NEW',
+    type: 'Luxury Home'
+  },
+  {
+    id: 3,
+    price: '$530,000',
+    beds: 3,
+    baths: 2,
+    sqft: 1850,
+    address: '1234 Maple Street, Seattle, WA 98101',
+    image: 'https://images.pexels.com/photos/1212053/pexels-photo-1212053.jpeg',
+    status: 'NEW',
+    type: 'Family Home'
+  },
+  {
+    id: 4,
+    price: '$649,000',
+    beds: 2,
+    baths: 2,
+    sqft: 1200,
+    address: '5678 Pine Avenue, Seattle, WA 98102',
+    image: 'https://images.pexels.com/photos/439391/pexels-photo-439391.jpeg',
+    status: 'NEW',
+    type: 'Condo'
+  },
+  {
+    id: 5,
+    price: '$1,200,000',
+    beds: 4,
+    baths: 3.5,
+    sqft: 2800,
+    address: '9876 Oak Boulevard, Bellevue, WA 98005',
+    image: 'https://images.unsplash.com/photo-1722555286588-fa6b686f8ed5',
+    status: 'NEW',
+    type: 'Townhouse'
+  },
+  {
+    id: 6,
+    price: '$929,000',
+    beds: 3,
+    baths: 2,
+    sqft: 2200,
+    address: '4567 Cedar Lane, Redmond, WA 98052',
+    image: 'https://images.pexels.com/photos/12913623/pexels-photo-12913623.jpeg',
+    status: 'NEW',
+    type: 'Ranch'
+  },
+  {
+    id: 7,
+    price: '$769,000',
+    beds: 2,
+    baths: 2,
+    sqft: 1400,
+    address: '1357 Birch Street, Seattle, WA 98103',
+    image: 'https://images.unsplash.com/photo-1664813954641-1ffcb7b55fd1',
+    status: 'NEW',
+    type: 'Modern Condo'
+  },
+  {
+    id: 8,
+    price: '$1,130,000',
+    beds: 5,
+    baths: 4,
+    sqft: 3500,
+    address: '2468 Elm Drive, Kirkland, WA 98033',
+    image: 'https://images.unsplash.com/photo-1593857389276-7c794900c90f',
+    status: 'NEW',
+    type: 'Traditional'
+  },
+  {
+    id: 9,
+    price: '$679,000',
+    beds: 2,
+    baths: 1.5,
+    sqft: 1100,
+    address: '3691 Willow Way, Tacoma, WA 98406',
+    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
+    status: 'NEW',
+    type: 'Starter Home'
+  },
+  {
+    id: 10,
+    price: '$589,000',
+    beds: 2,
+    baths: 2,
+    sqft: 1300,
+    address: '8520 Spruce Circle, Everett, WA 98201',
+    image: 'https://images.pexels.com/photos/1212053/pexels-photo-1212053.jpeg',
+    status: 'NEW',
+    type: 'Family Home'
+  },
+  {
+    id: 11,
+    price: '$925,000',
+    beds: 2,
+    baths: 2,
+    sqft: 1600,
+    address: '7410 Fir Avenue, Bellevue, WA 98004',
+    image: 'https://images.unsplash.com/photo-1621693722835-44c9dcb724fd',
+    status: 'NEW',
+    type: 'Luxury Condo'
+  },
+  {
+    id: 12,
+    price: '$700,000',
+    beds: 3,
+    baths: 2.5,
+    sqft: 1900,
+    address: '9632 Ash Street, Redmond, WA 98052',
+    image: 'https://images.pexels.com/photos/439391/pexels-photo-439391.jpeg',
+    status: 'NEW',
+    type: 'Modern Home'
   }
 ];
 
@@ -54,13 +169,19 @@ const companyLogos = [
 // Header Component
 export const Header = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavigate = (path) => {
+    navigate(path);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
+            <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => handleNavigate('/')}>
               <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">W</span>
               </div>
@@ -69,9 +190,16 @@ export const Header = () => {
           </div>
           
           <nav className="hidden md:flex space-x-8">
-            <a href="#buy" className="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            <button 
+              onClick={() => handleNavigate('/homes')}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                location.pathname === '/homes' 
+                  ? 'text-purple-600 bg-purple-50' 
+                  : 'text-gray-700 hover:text-purple-600'
+              }`}
+            >
               Buy
-            </a>
+            </button>
             <a href="#tour" className="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
               Tour Home
             </a>
@@ -105,6 +233,11 @@ export const Header = () => {
 // Hero Section Component
 export const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    navigate('/homes');
+  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -153,7 +286,10 @@ export const HeroSection = () => {
                 className="w-full px-4 py-3 rounded-xl bg-white/20 backdrop-blur-md border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
-            <button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105 flex items-center justify-center">
+            <button 
+              onClick={handleSearch}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105 flex items-center justify-center"
+            >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -164,7 +300,10 @@ export const HeroSection = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="bg-white text-purple-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all transform hover:scale-105">
+          <button 
+            onClick={() => navigate('/homes')}
+            className="bg-white text-purple-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all transform hover:scale-105"
+          >
             Get Started
           </button>
           <button className="border-2 border-white text-white px-8 py-3 rounded-xl font-semibold hover:bg-white hover:text-purple-600 transition-all transform hover:scale-105">
@@ -451,6 +590,288 @@ export const AIAgentSection = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+// Homes Page Component
+export const HomesPage = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilters, setSelectedFilters] = useState({
+    priceRange: '',
+    bedrooms: '',
+    bathrooms: '',
+    homeType: '',
+    sortBy: 'price-low'
+  });
+  const [filteredHomes, setFilteredHomes] = useState(mockHomes);
+
+  const filterOptions = {
+    priceRange: [
+      { value: '', label: 'Any Price' },
+      { value: '0-500000', label: 'Under $500K' },
+      { value: '500000-800000', label: '$500K - $800K' },
+      { value: '800000-1200000', label: '$800K - $1.2M' },
+      { value: '1200000-999999999', label: 'Over $1.2M' }
+    ],
+    bedrooms: [
+      { value: '', label: 'Any Beds' },
+      { value: '1', label: '1+ Beds' },
+      { value: '2', label: '2+ Beds' },
+      { value: '3', label: '3+ Beds' },
+      { value: '4', label: '4+ Beds' }
+    ],
+    bathrooms: [
+      { value: '', label: 'Any Baths' },
+      { value: '1', label: '1+ Baths' },
+      { value: '2', label: '2+ Baths' },
+      { value: '3', label: '3+ Baths' },
+      { value: '4', label: '4+ Baths' }
+    ],
+    homeType: [
+      { value: '', label: 'All Types' },
+      { value: 'Single Family', label: 'Single Family' },
+      { value: 'Condo', label: 'Condo' },
+      { value: 'Townhouse', label: 'Townhouse' },
+      { value: 'Luxury Home', label: 'Luxury' }
+    ],
+    sortBy: [
+      { value: 'price-low', label: 'Price: Low to High' },
+      { value: 'price-high', label: 'Price: High to Low' },
+      { value: 'beds-high', label: 'Beds: Most to Least' },
+      { value: 'sqft-high', label: 'Size: Largest to Smallest' }
+    ]
+  };
+
+  useEffect(() => {
+    let filtered = mockHomes.filter(home => {
+      const matchesSearch = !searchQuery || 
+        home.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        home.type.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const price = parseInt(home.price.replace(/[$,]/g, ''));
+      const matchesPrice = !selectedFilters.priceRange || (() => {
+        const [min, max] = selectedFilters.priceRange.split('-').map(Number);
+        return price >= min && price <= max;
+      })();
+
+      const matchesBeds = !selectedFilters.bedrooms || home.beds >= parseInt(selectedFilters.bedrooms);
+      const matchesBaths = !selectedFilters.bathrooms || home.baths >= parseInt(selectedFilters.bathrooms);
+      const matchesType = !selectedFilters.homeType || home.type === selectedFilters.homeType;
+
+      return matchesSearch && matchesPrice && matchesBeds && matchesBaths && matchesType;
+    });
+
+    // Sort filtered results
+    switch (selectedFilters.sortBy) {
+      case 'price-high':
+        filtered.sort((a, b) => parseInt(b.price.replace(/[$,]/g, '')) - parseInt(a.price.replace(/[$,]/g, '')));
+        break;
+      case 'beds-high':
+        filtered.sort((a, b) => b.beds - a.beds);
+        break;
+      case 'sqft-high':
+        filtered.sort((a, b) => b.sqft - a.sqft);
+        break;
+      default: // 'price-low'
+        filtered.sort((a, b) => parseInt(a.price.replace(/[$,]/g, '')) - parseInt(b.price.replace(/[$,]/g, '')));
+    }
+
+    setFilteredHomes(filtered);
+  }, [searchQuery, selectedFilters]);
+
+  const handleFilterChange = (filterType, value) => {
+    setSelectedFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const clearFilters = () => {
+    setSelectedFilters({
+      priceRange: '',
+      bedrooms: '',
+      bathrooms: '',
+      homeType: '',
+      sortBy: 'price-low'
+    });
+    setSearchQuery('');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-16">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Find Your Dream Home</h1>
+            <p className="text-xl text-purple-100 max-w-2xl mx-auto">
+              Search through our curated selection of homes and get paid up to $15K when you buy
+            </p>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    placeholder="Search by location, neighborhood, or home type..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-white/20 backdrop-blur-md border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+                  />
+                </div>
+                <button className="bg-white text-purple-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center justify-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters Section */}
+      <div className="bg-white border-b border-gray-200 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap gap-4 items-center justify-between">
+            <div className="flex flex-wrap gap-4">
+              {Object.entries(filterOptions).map(([filterType, options]) => (
+                <select
+                  key={filterType}
+                  value={selectedFilters[filterType]}
+                  onChange={(e) => handleFilterChange(filterType, e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  {options.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              ))}
+            </div>
+            <button
+              onClick={clearFilters}
+              className="text-purple-600 hover:text-purple-700 font-medium"
+            >
+              Clear All Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Results Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">
+            {filteredHomes.length} Homes Found
+          </h2>
+          <div className="text-sm text-gray-600">
+            Showing results for Washington state
+          </div>
+        </div>
+
+        {/* Homes Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredHomes.map((home) => (
+            <div key={home.id} className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden group">
+              <div className="relative">
+                <img 
+                  src={home.image} 
+                  alt={home.address}
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute top-4 left-4">
+                  <span className="bg-green-500 text-white px-2 py-1 rounded-lg text-sm font-medium">
+                    {home.status}
+                  </span>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <button className="w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
+                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900">{home.price}</h3>
+                  <span className="bg-purple-100 text-purple-600 px-2 py-1 rounded-lg text-sm font-medium">
+                    {home.type}
+                  </span>
+                </div>
+                
+                <div className="flex items-center space-x-4 mb-3 text-gray-600">
+                  <span className="flex items-center">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                    </svg>
+                    {home.beds} Beds
+                  </span>
+                  <span className="flex items-center">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                    {home.baths} Baths
+                  </span>
+                  <span className="flex items-center">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l4 4m8-4v4m0-4h-4m4 0l-4 4M4 16v4m0 0h4m-4 0l4-4m8 4l-4-4m4 4v-4m0 4h-4" />
+                    </svg>
+                    {home.sqft.toLocaleString()} Sq Ft
+                  </span>
+                </div>
+                
+                <p className="text-gray-700 mb-4">{home.address}</p>
+                
+                <div className="flex space-x-2">
+                  <button className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all transform hover:scale-105">
+                    View Details
+                  </button>
+                  <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    Schedule Tour
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Load More Button */}
+        {filteredHomes.length > 0 && (
+          <div className="text-center mt-12">
+            <button className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-8 py-3 rounded-xl font-medium transition-all">
+              Load More Homes
+            </button>
+          </div>
+        )}
+
+        {/* No Results */}
+        {filteredHomes.length === 0 && (
+          <div className="text-center py-12">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No homes found</h3>
+            <p className="text-gray-600 mb-4">Try adjusting your search criteria or clearing some filters.</p>
+            <button 
+              onClick={clearFilters}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105"
+            >
+              Clear All Filters
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

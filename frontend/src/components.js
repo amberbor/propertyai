@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
 
 // Mock data for the website
 const mockHomes = [
@@ -12,7 +12,23 @@ const mockHomes = [
     address: '4116 52nd Street NE, Tacoma, WA 98422',
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
     status: 'NEW',
-    type: 'Single Family'
+    type: 'Single Family',
+    yearBuilt: 2018,
+    lotSize: '0.25 acres',
+    hoaFees: 'None',
+    propertyTax: '$8,250/year',
+    description: 'Beautiful modern home with open concept design, chef\'s kitchen with granite countertops, and spacious master suite. Large backyard perfect for entertaining.',
+    features: ['Granite Countertops', 'Hardwood Floors', 'Walk-in Closets', 'Stainless Steel Appliances', 'Two-Car Garage'],
+    neighborhoods: ['Tacoma', 'Lincoln District'],
+    walkScore: 85,
+    transitScore: 72,
+    images: [
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
+      'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92',
+      'https://images.unsplash.com/photo-1556911220-bff31c812dba',
+      'https://images.unsplash.com/photo-1615874959474-d609969a20ed'
+    ],
+    agent: 'Sarah Johnson · WithJoy.AI Realty'
   },
   {
     id: 2,
@@ -23,7 +39,23 @@ const mockHomes = [
     address: '415 Shoreland Drive SE, Bellevue, WA 98004',
     image: 'https://images.unsplash.com/photo-1621693722835-44c9dcb724fd',
     status: 'NEW',
-    type: 'Luxury Home'
+    type: 'Luxury Home',
+    yearBuilt: 2021,
+    lotSize: '0.33 acres',
+    hoaFees: '$200/month',
+    propertyTax: '$12,960/year',
+    description: 'Stunning luxury home with premium finishes throughout. Features include a gourmet kitchen, spa-like master bath, and private backyard with pool.',
+    features: ['Swimming Pool', 'Quartz Countertops', 'Smart Home Technology', 'Wine Cellar', 'Three-Car Garage'],
+    neighborhoods: ['Bellevue', 'Somerset'],
+    walkScore: 78,
+    transitScore: 65,
+    images: [
+      'https://images.unsplash.com/photo-1621693722835-44c9dcb724fd',
+      'https://images.unsplash.com/photo-1631679706909-1844bbd07221',
+      'https://images.unsplash.com/photo-1507089947368-19c1da9775ae',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af'
+    ],
+    agent: 'Michael Chen · WithJoy.AI Realty'
   },
   {
     id: 3,
@@ -34,7 +66,23 @@ const mockHomes = [
     address: '1234 Maple Street, Seattle, WA 98101',
     image: 'https://images.pexels.com/photos/1212053/pexels-photo-1212053.jpeg',
     status: 'NEW',
-    type: 'Family Home'
+    type: 'Family Home',
+    yearBuilt: 2015,
+    lotSize: '0.18 acres',
+    hoaFees: 'None',
+    propertyTax: '$5,830/year',
+    description: 'Charming family home in a quiet neighborhood. Updated kitchen, spacious living areas, and a lovely garden make this the perfect starter home.',
+    features: ['Updated Kitchen', 'Fenced Yard', 'Hardwood Floors', 'Central Air', 'Storage Shed'],
+    neighborhoods: ['Seattle', 'Capitol Hill'],
+    walkScore: 92,
+    transitScore: 88,
+    images: [
+      'https://images.pexels.com/photos/1212053/pexels-photo-1212053.jpeg',
+      'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92',
+      'https://images.unsplash.com/photo-1556911220-bff31c812dba',
+      'https://images.unsplash.com/photo-1615874959474-d609969a20ed'
+    ],
+    agent: 'Emily Rodriguez · WithJoy.AI Realty'
   },
   {
     id: 4,
@@ -45,7 +93,23 @@ const mockHomes = [
     address: '5678 Pine Avenue, Seattle, WA 98102',
     image: 'https://images.pexels.com/photos/439391/pexels-photo-439391.jpeg',
     status: 'NEW',
-    type: 'Condo'
+    type: 'Condo',
+    yearBuilt: 2019,
+    lotSize: 'N/A',
+    hoaFees: '$450/month',
+    propertyTax: '$7,137/year',
+    description: 'Modern condo with city views and premium amenities. Building features fitness center, rooftop deck, and concierge service.',
+    features: ['City Views', 'In-Unit Laundry', 'Balcony', 'Gym Access', 'Concierge'],
+    neighborhoods: ['Seattle', 'Belltown'],
+    walkScore: 95,
+    transitScore: 92,
+    images: [
+      'https://images.pexels.com/photos/439391/pexels-photo-439391.jpeg',
+      'https://images.unsplash.com/photo-1631679706909-1844bbd07221',
+      'https://images.unsplash.com/photo-1507089947368-19c1da9775ae',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af'
+    ],
+    agent: 'David Thompson · WithJoy.AI Realty'
   },
   {
     id: 5,
@@ -56,7 +120,23 @@ const mockHomes = [
     address: '9876 Oak Boulevard, Bellevue, WA 98005',
     image: 'https://images.unsplash.com/photo-1722555286588-fa6b686f8ed5',
     status: 'NEW',
-    type: 'Townhouse'
+    type: 'Townhouse',
+    yearBuilt: 2020,
+    lotSize: 'N/A',
+    hoaFees: '$320/month',
+    propertyTax: '$14,400/year',
+    description: 'Elegant townhouse with sophisticated design and premium finishes. Features include a gourmet kitchen, master suite with walk-in closet, and private patio.',
+    features: ['Gourmet Kitchen', 'Master Suite', 'Private Patio', 'Attached Garage', 'Guest Bath'],
+    neighborhoods: ['Bellevue', 'Crossroads'],
+    walkScore: 82,
+    transitScore: 75,
+    images: [
+      'https://images.unsplash.com/photo-1722555286588-fa6b686f8ed5',
+      'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92',
+      'https://images.unsplash.com/photo-1556911220-bff31c812dba',
+      'https://images.unsplash.com/photo-1615874959474-d609969a20ed'
+    ],
+    agent: 'Lisa Wang · WithJoy.AI Realty'
   },
   {
     id: 6,
@@ -67,7 +147,23 @@ const mockHomes = [
     address: '4567 Cedar Lane, Redmond, WA 98052',
     image: 'https://images.pexels.com/photos/12913623/pexels-photo-12913623.jpeg',
     status: 'NEW',
-    type: 'Ranch'
+    type: 'Ranch',
+    yearBuilt: 2017,
+    lotSize: '0.28 acres',
+    hoaFees: 'None',
+    propertyTax: '$11,148/year',
+    description: 'Spacious ranch-style home with single-level living. Open floor plan, vaulted ceilings, and large windows create a bright and airy atmosphere.',
+    features: ['Vaulted Ceilings', 'Open Floor Plan', 'Large Windows', 'Main Floor Living', 'RV Parking'],
+    neighborhoods: ['Redmond', 'Education Hill'],
+    walkScore: 68,
+    transitScore: 55,
+    images: [
+      'https://images.pexels.com/photos/12913623/pexels-photo-12913623.jpeg',
+      'https://images.unsplash.com/photo-1631679706909-1844bbd07221',
+      'https://images.unsplash.com/photo-1507089947368-19c1da9775ae',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af'
+    ],
+    agent: 'Robert Kim · WithJoy.AI Realty'
   },
   {
     id: 7,
@@ -78,7 +174,23 @@ const mockHomes = [
     address: '1357 Birch Street, Seattle, WA 98103',
     image: 'https://images.unsplash.com/photo-1664813954641-1ffcb7b55fd1',
     status: 'NEW',
-    type: 'Modern Condo'
+    type: 'Modern Condo',
+    yearBuilt: 2022,
+    lotSize: 'N/A',
+    hoaFees: '$520/month',
+    propertyTax: '$8,459/year',
+    description: 'Brand new modern condo with floor-to-ceiling windows and contemporary finishes. Building amenities include rooftop terrace and bike storage.',
+    features: ['Floor-to-Ceiling Windows', 'Modern Finishes', 'Rooftop Access', 'Bike Storage', 'Energy Efficient'],
+    neighborhoods: ['Seattle', 'Fremont'],
+    walkScore: 89,
+    transitScore: 84,
+    images: [
+      'https://images.unsplash.com/photo-1664813954641-1ffcb7b55fd1',
+      'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92',
+      'https://images.unsplash.com/photo-1556911220-bff31c812dba',
+      'https://images.unsplash.com/photo-1615874959474-d609969a20ed'
+    ],
+    agent: 'Jennifer Park · WithJoy.AI Realty'
   },
   {
     id: 8,
@@ -89,7 +201,23 @@ const mockHomes = [
     address: '2468 Elm Drive, Kirkland, WA 98033',
     image: 'https://images.unsplash.com/photo-1593857389276-7c794900c90f',
     status: 'NEW',
-    type: 'Traditional'
+    type: 'Traditional',
+    yearBuilt: 2016,
+    lotSize: '0.31 acres',
+    hoaFees: '$150/month',
+    propertyTax: '$13,569/year',
+    description: 'Stately traditional home with classic design and modern updates. Features include formal dining room, family room with fireplace, and spacious bedrooms.',
+    features: ['Formal Dining', 'Fireplace', 'Spacious Bedrooms', 'Updated Bathrooms', 'Three-Car Garage'],
+    neighborhoods: ['Kirkland', 'Juanita'],
+    walkScore: 74,
+    transitScore: 62,
+    images: [
+      'https://images.unsplash.com/photo-1593857389276-7c794900c90f',
+      'https://images.unsplash.com/photo-1631679706909-1844bbd07221',
+      'https://images.unsplash.com/photo-1507089947368-19c1da9775ae',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af'
+    ],
+    agent: 'Andrew Davis · WithJoy.AI Realty'
   },
   {
     id: 9,
@@ -100,7 +228,23 @@ const mockHomes = [
     address: '3691 Willow Way, Tacoma, WA 98406',
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
     status: 'NEW',
-    type: 'Starter Home'
+    type: 'Starter Home',
+    yearBuilt: 2014,
+    lotSize: '0.15 acres',
+    hoaFees: 'None',
+    propertyTax: '$7,469/year',
+    description: 'Perfect starter home with updated features and move-in ready condition. Cozy living spaces and a private backyard make this home ideal for first-time buyers.',
+    features: ['Move-in Ready', 'Updated Features', 'Private Backyard', 'New Paint', 'Storage'],
+    neighborhoods: ['Tacoma', 'North End'],
+    walkScore: 76,
+    transitScore: 68,
+    images: [
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
+      'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92',
+      'https://images.unsplash.com/photo-1556911220-bff31c812dba',
+      'https://images.unsplash.com/photo-1615874959474-d609969a20ed'
+    ],
+    agent: 'Maria Garcia · WithJoy.AI Realty'
   },
   {
     id: 10,
@@ -111,7 +255,23 @@ const mockHomes = [
     address: '8520 Spruce Circle, Everett, WA 98201',
     image: 'https://images.pexels.com/photos/1212053/pexels-photo-1212053.jpeg',
     status: 'NEW',
-    type: 'Family Home'
+    type: 'Family Home',
+    yearBuilt: 2013,
+    lotSize: '0.20 acres',
+    hoaFees: '$75/month',
+    propertyTax: '$6,479/year',
+    description: 'Well-maintained family home in a friendly neighborhood. Features include an updated kitchen, comfortable living spaces, and a large backyard.',
+    features: ['Updated Kitchen', 'Large Backyard', 'Comfortable Living', 'Good Schools', 'Quiet Street'],
+    neighborhoods: ['Everett', 'Mukilteo'],
+    walkScore: 65,
+    transitScore: 58,
+    images: [
+      'https://images.pexels.com/photos/1212053/pexels-photo-1212053.jpeg',
+      'https://images.unsplash.com/photo-1631679706909-1844bbd07221',
+      'https://images.unsplash.com/photo-1507089947368-19c1da9775ae',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af'
+    ],
+    agent: 'Thomas Wilson · WithJoy.AI Realty'
   },
   {
     id: 11,
@@ -122,7 +282,23 @@ const mockHomes = [
     address: '7410 Fir Avenue, Bellevue, WA 98004',
     image: 'https://images.unsplash.com/photo-1621693722835-44c9dcb724fd',
     status: 'NEW',
-    type: 'Luxury Condo'
+    type: 'Luxury Condo',
+    yearBuilt: 2021,
+    lotSize: 'N/A',
+    hoaFees: '$650/month',
+    propertyTax: '$10,175/year',
+    description: 'Luxury condo with high-end finishes and stunning views. Building amenities include spa, fitness center, and 24/7 concierge service.',
+    features: ['High-end Finishes', 'Stunning Views', 'Spa Access', 'Fitness Center', '24/7 Concierge'],
+    neighborhoods: ['Bellevue', 'Downtown'],
+    walkScore: 91,
+    transitScore: 87,
+    images: [
+      'https://images.unsplash.com/photo-1621693722835-44c9dcb724fd',
+      'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92',
+      'https://images.unsplash.com/photo-1556911220-bff31c812dba',
+      'https://images.unsplash.com/photo-1615874959474-d609969a20ed'
+    ],
+    agent: 'Susan Lee · WithJoy.AI Realty'
   },
   {
     id: 12,
@@ -133,7 +309,23 @@ const mockHomes = [
     address: '9632 Ash Street, Redmond, WA 98052',
     image: 'https://images.pexels.com/photos/439391/pexels-photo-439391.jpeg',
     status: 'NEW',
-    type: 'Modern Home'
+    type: 'Modern Home',
+    yearBuilt: 2019,
+    lotSize: '0.22 acres',
+    hoaFees: '$120/month',
+    propertyTax: '$8,400/year',
+    description: 'Contemporary modern home with clean lines and energy-efficient features. Open concept design with high ceilings and natural light throughout.',
+    features: ['Energy Efficient', 'High Ceilings', 'Natural Light', 'Open Concept', 'Modern Design'],
+    neighborhoods: ['Redmond', 'Bear Creek'],
+    walkScore: 72,
+    transitScore: 65,
+    images: [
+      'https://images.pexels.com/photos/439391/pexels-photo-439391.jpeg',
+      'https://images.unsplash.com/photo-1631679706909-1844bbd07221',
+      'https://images.unsplash.com/photo-1507089947368-19c1da9775ae',
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af'
+    ],
+    agent: 'Kevin Martinez · WithJoy.AI Realty'
   }
 ];
 
@@ -193,7 +385,7 @@ export const Header = () => {
             <button 
               onClick={() => handleNavigate('/homes')}
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === '/homes' 
+                location.pathname === '/homes' || location.pathname.startsWith('/property/')
                   ? 'text-purple-600 bg-purple-50' 
                   : 'text-gray-700 hover:text-purple-600'
               }`}
@@ -604,6 +796,7 @@ export const HomesPage = () => {
     sortBy: 'price-low'
   });
   const [filteredHomes, setFilteredHomes] = useState(mockHomes);
+  const navigate = useNavigate();
 
   const filterOptions = {
     priceRange: [
@@ -695,6 +888,10 @@ export const HomesPage = () => {
       sortBy: 'price-low'
     });
     setSearchQuery('');
+  };
+
+  const handleViewProperty = (propertyId) => {
+    navigate(`/property/${propertyId}`);
   };
 
   return (
@@ -831,7 +1028,10 @@ export const HomesPage = () => {
                 <p className="text-gray-700 mb-4">{home.address}</p>
                 
                 <div className="flex space-x-2">
-                  <button className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all transform hover:scale-105">
+                  <button 
+                    onClick={() => handleViewProperty(home.id)}
+                    className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all transform hover:scale-105"
+                  >
                     View Details
                   </button>
                   <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
@@ -871,6 +1071,378 @@ export const HomesPage = () => {
           </div>
         )}
       </div>
+    </div>
+  );
+};
+
+// Property Detail Page Component
+export const PropertyDetailPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+
+  const property = mockHomes.find(home => home.id === parseInt(id));
+
+  if (!property) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-16 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Property Not Found</h1>
+          <button 
+            onClick={() => navigate('/homes')}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105"
+          >
+            Back to Homes
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const calculateRebate = (price) => {
+    const numericPrice = parseInt(price.replace(/[$,]/g, ''));
+    const commission = numericPrice * 0.03; // 3% commission
+    const rebate = commission * 0.70; // 70% rebate
+    return Math.round(rebate);
+  };
+
+  const getSimilarProperties = () => {
+    return mockHomes
+      .filter(home => home.id !== property.id && home.type === property.type)
+      .slice(0, 3);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-16">
+      {/* Image Gallery */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid lg:grid-cols-3 gap-4">
+            {/* Main Image */}
+            <div className="lg:col-span-2 relative">
+              <img 
+                src={property.images[currentImageIndex]} 
+                alt={property.address}
+                className="w-full h-96 lg:h-[500px] object-cover rounded-2xl"
+              />
+              <button 
+                onClick={() => navigate('/homes')}
+                className="absolute top-4 left-4 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+              </button>
+              <button className="absolute bottom-4 right-4 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg text-gray-700 font-medium hover:bg-white transition-colors">
+                Show all photos ({property.images.length})
+              </button>
+            </div>
+            
+            {/* Thumbnail Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              {property.images.slice(1, 5).map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index + 1)}
+                  className={`relative rounded-xl overflow-hidden ${
+                    currentImageIndex === index + 1 ? 'ring-2 ring-purple-500' : ''
+                  }`}
+                >
+                  <img 
+                    src={image} 
+                    alt={`${property.address} ${index + 2}`}
+                    className="w-full h-32 lg:h-36 object-cover hover:scale-105 transition-transform"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Property Details */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Property Header */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-sm font-medium">
+                  💰 ${calculateRebate(property.price).toLocaleString()} rebate
+                </span>
+                <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
+                  {property.status}
+                </span>
+                <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium">
+                  {property.type}
+                </span>
+              </div>
+              
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">{property.price}</h1>
+              <p className="text-lg text-gray-600 mb-4">{property.address}</p>
+              
+              <div className="grid grid-cols-3 gap-6 mb-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-gray-900">{property.beds}</div>
+                  <div className="text-sm text-gray-600">Beds</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-gray-900">{property.baths}</div>
+                  <div className="text-sm text-gray-600">Bath</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-gray-900">{property.sqft.toLocaleString()}</div>
+                  <div className="text-sm text-gray-600">Sq ft</div>
+                </div>
+              </div>
+              
+              <div className="flex space-x-4">
+                <button className="w-10 h-10 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
+                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
+                <button className="flex items-center space-x-2 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors">
+                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                  </svg>
+                  <span>Share</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Home Highlights */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Home highlights</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Property Details</h3>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <div className="flex justify-between">
+                      <span>Year Built:</span>
+                      <span>{property.yearBuilt}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Lot Size:</span>
+                      <span>{property.lotSize}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>HOA Fees:</span>
+                      <span>{property.hoaFees}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Property Tax:</span>
+                      <span>{property.propertyTax}</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Walkability</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Walk Score:</span>
+                      <span className="bg-green-100 text-green-600 px-2 py-1 rounded text-sm font-medium">
+                        {property.walkScore}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Transit Score:</span>
+                      <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-sm font-medium">
+                        {property.transitScore}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Property Description */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">About this home</h2>
+              <p className="text-gray-700 leading-relaxed mb-6">{property.description}</p>
+              
+              <h3 className="font-semibold text-gray-900 mb-3">Features</h3>
+              <div className="grid md:grid-cols-2 gap-2">
+                {property.features.map((feature, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <span className="text-gray-700">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Listing Agent */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Listed by</h2>
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">
+                    {property.agent.split(' ')[0][0]}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">{property.agent}</h3>
+                  <p className="text-sm text-gray-600">WithJoy.AI Realty Partner</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 space-y-6">
+              {/* Commission Rebate Card */}
+              <div className="bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-1">Commission rebate</h3>
+                    <div className="text-3xl font-bold">${calculateRebate(property.price).toLocaleString()}</div>
+                  </div>
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <span className="text-2xl">💰</span>
+                  </div>
+                </div>
+                <button className="w-full bg-white text-purple-600 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all transform hover:scale-105">
+                  How it Works
+                </button>
+              </div>
+
+              {/* Schedule Tour Card */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Ready to see this home?</h3>
+                <button 
+                  onClick={() => setShowScheduleModal(true)}
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-xl font-semibold transition-all transform hover:scale-105 mb-4"
+                >
+                  Request a Tour
+                </button>
+                <button className="w-full border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all">
+                  Contact an agent
+                </button>
+              </div>
+
+              {/* Neighborhood Info */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Neighborhood</h3>
+                <div className="space-y-2">
+                  {property.neighborhoods.map((neighborhood, index) => (
+                    <span key={index} className="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 mb-2">
+                      {neighborhood}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Similar Properties */}
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">Similar properties</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {getSimilarProperties().map((home) => (
+              <div key={home.id} className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden group cursor-pointer"
+                   onClick={() => navigate(`/property/${home.id}`)}>
+                <div className="relative">
+                  <img 
+                    src={home.image} 
+                    alt={home.address}
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-green-500 text-white px-2 py-1 rounded-lg text-sm font-medium">
+                      {home.status}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-2xl font-bold text-gray-900">{home.price}</h3>
+                    <span className="bg-purple-100 text-purple-600 px-2 py-1 rounded-lg text-sm font-medium">
+                      {home.type}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4 mb-3 text-gray-600">
+                    <span>{home.beds} Beds</span>
+                    <span>{home.baths} Baths</span>
+                    <span>{home.sqft.toLocaleString()} Sq Ft</span>
+                  </div>
+                  
+                  <p className="text-gray-700">{home.address}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Schedule Tour Modal */}
+      {showScheduleModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-900">Schedule a Tour</h3>
+              <button 
+                onClick={() => setShowScheduleModal(false)}
+                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
+              >
+                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <p className="text-gray-600 mb-6">Choose your preferred date and time to tour this property.</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Date</label>
+                <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Time</label>
+                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                  <option>9:00 AM - 10:00 AM</option>
+                  <option>10:00 AM - 11:00 AM</option>
+                  <option>11:00 AM - 12:00 PM</option>
+                  <option>1:00 PM - 2:00 PM</option>
+                  <option>2:00 PM - 3:00 PM</option>
+                  <option>3:00 PM - 4:00 PM</option>
+                  <option>4:00 PM - 5:00 PM</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
+                <input type="text" placeholder="Enter your full name" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <input type="tel" placeholder="(555) 123-4567" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              </div>
+            </div>
+            
+            <div className="flex space-x-3 mt-6">
+              <button 
+                onClick={() => setShowScheduleModal(false)}
+                className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-xl font-semibold transition-all">
+                Schedule Tour
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

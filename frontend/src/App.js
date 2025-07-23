@@ -10,7 +10,8 @@ import {
   CommissionRebateSection, 
   AIAgentSection, 
   Footer,
-  HomesPage 
+  HomesPage,
+  PropertyDetailPage
 } from './components';
 
 // Home Page Component
@@ -35,6 +36,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/homes" element={<HomesPage />} />
+          <Route path="/property/:id" element={<PropertyDetailPage />} />
         </Routes>
         <Footer />
       </BrowserRouter>

@@ -11,6 +11,7 @@ import {
   AIAgentSection, 
   Footer,
   HomesPage,
+  MapHomesPage,
   PropertyDetailPage
 } from './components';
 
@@ -36,6 +37,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/homes" element={<HomesPage />} />
+          <Route path="/homes-map" element={<MapHomesPage />} />
           <Route path="/property/:id" element={<PropertyDetailPage />} />
         </Routes>
         <Footer />

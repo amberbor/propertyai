@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // Mock data for the website
 const mockHomes = [
@@ -10,6 +13,8 @@ const mockHomes = [
     baths: 2.5,
     sqft: 2419,
     address: '4116 52nd Street NE, Tacoma, WA 98422',
+    latitude: 47.2529,
+    longitude: -122.4596,
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
     status: 'NEW',
     type: 'Single Family',
@@ -37,6 +42,8 @@ const mockHomes = [
     baths: 3,
     sqft: 3200,
     address: '415 Shoreland Drive SE, Bellevue, WA 98004',
+    latitude: 47.6101,
+    longitude: -122.2015,
     image: 'https://images.unsplash.com/photo-1621693722835-44c9dcb724fd',
     status: 'NEW',
     type: 'Luxury Home',
@@ -64,6 +71,8 @@ const mockHomes = [
     baths: 2,
     sqft: 1850,
     address: '1234 Maple Street, Seattle, WA 98101',
+    latitude: 47.6062,
+    longitude: -122.3321,
     image: 'https://images.pexels.com/photos/1212053/pexels-photo-1212053.jpeg',
     status: 'NEW',
     type: 'Family Home',
@@ -91,6 +100,8 @@ const mockHomes = [
     baths: 2,
     sqft: 1200,
     address: '5678 Pine Avenue, Seattle, WA 98102',
+    latitude: 47.6175,
+    longitude: -122.3493,
     image: 'https://images.pexels.com/photos/439391/pexels-photo-439391.jpeg',
     status: 'NEW',
     type: 'Condo',
@@ -118,6 +129,8 @@ const mockHomes = [
     baths: 3.5,
     sqft: 2800,
     address: '9876 Oak Boulevard, Bellevue, WA 98005',
+    latitude: 47.6144,
+    longitude: -122.1923,
     image: 'https://images.unsplash.com/photo-1722555286588-fa6b686f8ed5',
     status: 'NEW',
     type: 'Townhouse',
@@ -145,6 +158,8 @@ const mockHomes = [
     baths: 2,
     sqft: 2200,
     address: '4567 Cedar Lane, Redmond, WA 98052',
+    latitude: 47.6740,
+    longitude: -122.1215,
     image: 'https://images.pexels.com/photos/12913623/pexels-photo-12913623.jpeg',
     status: 'NEW',
     type: 'Ranch',
@@ -172,6 +187,8 @@ const mockHomes = [
     baths: 2,
     sqft: 1400,
     address: '1357 Birch Street, Seattle, WA 98103',
+    latitude: 47.6587,
+    longitude: -122.3493,
     image: 'https://images.unsplash.com/photo-1664813954641-1ffcb7b55fd1',
     status: 'NEW',
     type: 'Modern Condo',
@@ -199,6 +216,8 @@ const mockHomes = [
     baths: 4,
     sqft: 3500,
     address: '2468 Elm Drive, Kirkland, WA 98033',
+    latitude: 47.6816,
+    longitude: -122.2087,
     image: 'https://images.unsplash.com/photo-1593857389276-7c794900c90f',
     status: 'NEW',
     type: 'Traditional',
@@ -226,6 +245,8 @@ const mockHomes = [
     baths: 1.5,
     sqft: 1100,
     address: '3691 Willow Way, Tacoma, WA 98406',
+    latitude: 47.2866,
+    longitude: -122.4788,
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
     status: 'NEW',
     type: 'Starter Home',
@@ -253,6 +274,8 @@ const mockHomes = [
     baths: 2,
     sqft: 1300,
     address: '8520 Spruce Circle, Everett, WA 98201',
+    latitude: 47.9789,
+    longitude: -122.2021,
     image: 'https://images.pexels.com/photos/1212053/pexels-photo-1212053.jpeg',
     status: 'NEW',
     type: 'Family Home',
@@ -280,6 +303,8 @@ const mockHomes = [
     baths: 2,
     sqft: 1600,
     address: '7410 Fir Avenue, Bellevue, WA 98004',
+    latitude: 47.6170,
+    longitude: -122.2015,
     image: 'https://images.unsplash.com/photo-1621693722835-44c9dcb724fd',
     status: 'NEW',
     type: 'Luxury Condo',
@@ -307,6 +332,8 @@ const mockHomes = [
     baths: 2.5,
     sqft: 1900,
     address: '9632 Ash Street, Redmond, WA 98052',
+    latitude: 47.6667,
+    longitude: -122.1301,
     image: 'https://images.pexels.com/photos/439391/pexels-photo-439391.jpeg',
     status: 'NEW',
     type: 'Modern Home',
@@ -385,12 +412,22 @@ export const Header = () => {
             <button 
               onClick={() => handleNavigate('/homes')}
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === '/homes' || location.pathname.startsWith('/property/')
+                location.pathname === '/homes'
                   ? 'text-purple-600 bg-purple-50' 
                   : 'text-gray-700 hover:text-purple-600'
               }`}
             >
               Buy
+            </button>
+            <button 
+              onClick={() => handleNavigate('/homes-map')}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                location.pathname === '/homes-map' || location.pathname.startsWith('/property/')
+                  ? 'text-purple-600 bg-purple-50' 
+                  : 'text-gray-700 hover:text-purple-600'
+              }`}
+            >
+              Map View
             </button>
             <a href="#tour" className="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
               Tour Home
@@ -493,13 +530,16 @@ export const HeroSection = () => {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button 
-            onClick={() => navigate('/homes')}
+            onClick={() => navigate('/homes-map')}
             className="bg-white text-purple-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all transform hover:scale-105"
           >
-            Get Started
+            Search on Map
           </button>
-          <button className="border-2 border-white text-white px-8 py-3 rounded-xl font-semibold hover:bg-white hover:text-purple-600 transition-all transform hover:scale-105">
-            Learn More
+          <button 
+            onClick={() => navigate('/homes')}
+            className="border-2 border-white text-white px-8 py-3 rounded-xl font-semibold hover:bg-white hover:text-purple-600 transition-all transform hover:scale-105"
+          >
+            Browse Listings
           </button>
         </div>
 
@@ -1444,6 +1484,420 @@ export const PropertyDetailPage = () => {
         </div>
       )}
     </div>
+  );
+};
+
+// Map-Enhanced Homes Page Component
+export const MapHomesPage = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilters, setSelectedFilters] = useState({
+    priceRange: '',
+    bedrooms: '',
+    bathrooms: '',
+    homeType: '',
+    sortBy: 'price-low'
+  });
+  const [filteredHomes, setFilteredHomes] = useState(mockHomes);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [map, setMap] = useState(null);
+  const navigate = useNavigate();
+
+  // Fix leaflet default markers
+  useEffect(() => {
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    });
+  }, []);
+
+  const filterOptions = {
+    priceRange: [
+      { value: '', label: 'Any Price' },
+      { value: '0-500000', label: 'Under $500K' },
+      { value: '500000-800000', label: '$500K - $800K' },
+      { value: '800000-1200000', label: '$800K - $1.2M' },
+      { value: '1200000-999999999', label: 'Over $1.2M' }
+    ],
+    bedrooms: [
+      { value: '', label: 'Any Beds' },
+      { value: '1', label: '1+ Beds' },
+      { value: '2', label: '2+ Beds' },
+      { value: '3', label: '3+ Beds' },
+      { value: '4', label: '4+ Beds' }
+    ],
+    bathrooms: [
+      { value: '', label: 'Any Baths' },
+      { value: '1', label: '1+ Baths' },
+      { value: '2', label: '2+ Baths' },
+      { value: '3', label: '3+ Baths' },
+      { value: '4', label: '4+ Baths' }
+    ],
+    homeType: [
+      { value: '', label: 'All Types' },
+      { value: 'Single Family', label: 'Single Family' },
+      { value: 'Condo', label: 'Condo' },
+      { value: 'Townhouse', label: 'Townhouse' },
+      { value: 'Luxury Home', label: 'Luxury' }
+    ],
+    sortBy: [
+      { value: 'price-low', label: 'Price: Low to High' },
+      { value: 'price-high', label: 'Price: High to Low' },
+      { value: 'beds-high', label: 'Beds: Most to Least' },
+      { value: 'sqft-high', label: 'Size: Largest to Smallest' }
+    ]
+  };
+
+  useEffect(() => {
+    let filtered = mockHomes.filter(home => {
+      const matchesSearch = !searchQuery || 
+        home.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        home.type.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const price = parseInt(home.price.replace(/[$,]/g, ''));
+      const matchesPrice = !selectedFilters.priceRange || (() => {
+        const [min, max] = selectedFilters.priceRange.split('-').map(Number);
+        return price >= min && price <= max;
+      })();
+
+      const matchesBeds = !selectedFilters.bedrooms || home.beds >= parseInt(selectedFilters.bedrooms);
+      const matchesBaths = !selectedFilters.bathrooms || home.baths >= parseInt(selectedFilters.bathrooms);
+      const matchesType = !selectedFilters.homeType || home.type === selectedFilters.homeType;
+
+      return matchesSearch && matchesPrice && matchesBeds && matchesBaths && matchesType;
+    });
+
+    // Sort filtered results
+    switch (selectedFilters.sortBy) {
+      case 'price-high':
+        filtered.sort((a, b) => parseInt(b.price.replace(/[$,]/g, '')) - parseInt(a.price.replace(/[$,]/g, '')));
+        break;
+      case 'beds-high':
+        filtered.sort((a, b) => b.beds - a.beds);
+        break;
+      case 'sqft-high':
+        filtered.sort((a, b) => b.sqft - a.sqft);
+        break;
+      default: // 'price-low'
+        filtered.sort((a, b) => parseInt(a.price.replace(/[$,]/g, '')) - parseInt(b.price.replace(/[$,]/g, '')));
+    }
+
+    setFilteredHomes(filtered);
+  }, [searchQuery, selectedFilters]);
+
+  const handleFilterChange = (filterType, value) => {
+    setSelectedFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const clearFilters = () => {
+    setSelectedFilters({
+      priceRange: '',
+      bedrooms: '',
+      bathrooms: '',
+      homeType: '',
+      sortBy: 'price-low'
+    });
+    setSearchQuery('');
+  };
+
+  const handlePropertySelect = (property) => {
+    setSelectedProperty(property);
+    if (map) {
+      map.setView([property.latitude, property.longitude], Math.max(map.getZoom(), 14));
+    }
+  };
+
+  const handleViewProperty = (propertyId) => {
+    navigate(`/property/${propertyId}`);
+  };
+
+  // Custom marker icon for properties
+  const createCustomIcon = (price, isSelected) => {
+    return L.divIcon({
+      html: `
+        <div class="property-marker ${isSelected ? 'selected' : ''}">
+          <div class="marker-price">${price}</div>
+          <div class="marker-arrow"></div>
+        </div>
+      `,
+      className: 'custom-marker',
+      iconSize: [80, 40],
+      iconAnchor: [40, 40]
+    });
+  };
+
+  return (
+    <>
+      <style jsx>{`
+        .custom-marker {
+          background: transparent !important;
+          border: none !important;
+        }
+        .property-marker {
+          background: white;
+          border: 2px solid #e5e7eb;
+          border-radius: 8px;
+          padding: 4px 8px;
+          font-size: 12px;
+          font-weight: bold;
+          color: #1f2937;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          position: relative;
+          transition: all 0.2s ease;
+        }
+        .property-marker:hover,
+        .property-marker.selected {
+          border-color: #8b5cf6;
+          background: #f3f4f6;
+          transform: scale(1.05);
+        }
+        .marker-price {
+          white-space: nowrap;
+        }
+        .marker-arrow {
+          position: absolute;
+          bottom: -6px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 6px solid transparent;
+          border-right: 6px solid transparent;
+          border-top: 6px solid #e5e7eb;
+        }
+        .property-marker.selected .marker-arrow {
+          border-top-color: #8b5cf6;
+        }
+        .property-marker:hover .marker-arrow {
+          border-top-color: #8b5cf6;
+        }
+      `}</style>
+      
+      <div className="h-screen pt-16 bg-gray-50">
+        {/* Header with Search and Filters */}
+        <div className="bg-white border-b border-gray-200 p-4 z-10 relative">
+          <div className="max-w-7xl mx-auto">
+            {/* Search Bar */}
+            <div className="mb-4">
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    placeholder="Search by location, neighborhood, or home type..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                </div>
+                <button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                  Search
+                </button>
+              </div>
+            </div>
+            
+            {/* Filters */}
+            <div className="flex flex-wrap gap-4 items-center justify-between">
+              <div className="flex flex-wrap gap-4">
+                {Object.entries(filterOptions).map(([filterType, options]) => (
+                  <select
+                    key={filterType}
+                    value={selectedFilters[filterType]}
+                    onChange={(e) => handleFilterChange(filterType, e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                  >
+                    {options.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ))}
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-600">{filteredHomes.length} properties</span>
+                <button
+                  onClick={clearFilters}
+                  className="text-purple-600 hover:text-purple-700 font-medium text-sm"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Split Screen Layout */}
+        <div className="flex h-[calc(100vh-180px)]">
+          {/* Map Section */}
+          <div className="flex-1 relative">
+            <MapContainer
+              center={[47.6062, -122.2015]}
+              zoom={10}
+              style={{ height: '100%', width: '100%' }}
+              ref={setMap}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              
+              {filteredHomes.map((property) => (
+                <Marker
+                  key={property.id}
+                  position={[property.latitude, property.longitude]}
+                  icon={createCustomIcon(property.price, selectedProperty?.id === property.id)}
+                  eventHandlers={{
+                    click: () => handlePropertySelect(property)
+                  }}
+                >
+                  <Popup>
+                    <div className="p-2 min-w-[200px]">
+                      <img 
+                        src={property.image} 
+                        alt={property.address}
+                        className="w-full h-24 object-cover rounded mb-2"
+                      />
+                      <div className="text-lg font-bold text-gray-900 mb-1">{property.price}</div>
+                      <div className="text-sm text-gray-600 mb-1">
+                        {property.beds} beds • {property.baths} baths • {property.sqft.toLocaleString()} sq ft
+                      </div>
+                      <div className="text-xs text-gray-500 mb-2">{property.address}</div>
+                      <button
+                        onClick={() => handleViewProperty(property.id)}
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded text-sm font-medium transition-all"
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
+          </div>
+
+          {/* Property List Section */}
+          <div className="w-96 bg-white border-l border-gray-200 overflow-y-auto">
+            <div className="p-4">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">
+                Properties ({filteredHomes.length})
+              </h2>
+              
+              <div className="space-y-4">
+                {filteredHomes.map((home) => {
+                  // Calculate rebate for display
+                  const numericPrice = parseInt(home.price.replace(/[$,]/g, ''));
+                  const commission = numericPrice * 0.03;
+                  const rebate = Math.round(commission * 0.70 / 1000);
+                  
+                  return (
+                    <div 
+                      key={home.id} 
+                      className={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg cursor-pointer transition-all ${
+                        selectedProperty?.id === home.id ? 'ring-2 ring-purple-500' : 'border border-gray-100'
+                      }`}
+                      onClick={() => handlePropertySelect(home)}
+                    >
+                      <div className="relative">
+                        <img 
+                          src={home.image} 
+                          alt={home.address}
+                          className="w-full h-48 object-cover"
+                        />
+                        
+                        {/* New Badge */}
+                        <div className="absolute top-3 left-3">
+                          <span className="bg-white text-gray-900 px-2 py-1 rounded-md text-xs font-medium shadow-sm">
+                            {home.status}
+                          </span>
+                        </div>
+                        
+                        {/* Share and Favorite Icons */}
+                        <div className="absolute top-3 right-3 flex gap-2">
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-sm"
+                          >
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-sm"
+                          >
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                          </button>
+                        </div>
+                        
+                        {/* Rebate Badge */}
+                        <div className="absolute bottom-3 left-3">
+                          <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            ${rebate}K rebate
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="p-4">
+                        {/* Price */}
+                        <div className="flex justify-between items-center mb-3">
+                          <h3 className="text-2xl font-bold text-gray-900">{home.price}</h3>
+                        </div>
+                        
+                        {/* Property Details */}
+                        <div className="flex items-center text-gray-600 text-sm mb-3">
+                          <span className="flex items-center mr-4">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                            </svg>
+                            {home.beds} Bds
+                          </span>
+                          <span className="flex items-center mr-4">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                            </svg>
+                            {home.baths} Ba
+                          </span>
+                          <span className="flex items-center">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l4 4m8-4v4m0-4h-4m4 0l-4 4M4 16v4m0 0h4m-4 0l4-4m8 4l-4-4m4 4v-4m0 4h-4" />
+                            </svg>
+                            {home.sqft.toLocaleString()} sq ft
+                          </span>
+                        </div>
+                        
+                        {/* Address */}
+                        <p className="text-sm text-gray-600 leading-relaxed">{home.address}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {filteredHomes.length === 0 && (
+                <div className="text-center py-8">
+                  <div className="text-gray-400 mb-2">No properties found</div>
+                  <button 
+                    onClick={clearFilters}
+                    className="text-purple-600 hover:text-purple-700 font-medium text-sm"
+                  >
+                    Clear filters to see all properties
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
